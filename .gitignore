@@ -1,0 +1,14 @@
+# Compiler output
+out/
+cache/
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
