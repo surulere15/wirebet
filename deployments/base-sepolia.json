@@ -2,13 +2,21 @@
   "chainId": 84532,
   "network": "base-sepolia",
   "contracts": {
-    "feeRouter": "0x_DEPLOY_AND_FILL",
-    "positions": "0x_DEPLOY_AND_FILL",
-    "factory": "0x_DEPLOY_AND_FILL"
+    "feeRouter": "0x0b25092aEb41Fb4E758237357cef699501B89feB",
+    "positions": "0x62122627787D80fAf13d49ca8F17D9c266731d89",
+    "factory": "0xCAF958431B7C2F297E2b64F30768Be896B65d9c0"
   },
   "collateral": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
-  "deployer": "0x_DEPLOY_AND_FILL",
-  "deployedAt": "",
+  "deployer": "0xb60B3ffcdB991fC548FA320DcBCB99a8B3206D3e",
+  "deployedAt": "2026-02-20",
   "blockNumber": 0,
-  "markets": []
+  "markets": [
+    {
+      "marketId": "0xfb7ae5784948ed8e8576d7990b0f6fe38c2ece272ceddfc6aea6f78e347debab",
+      "address": "0x949cB81f5CaDCaF0571A54f6B3fca797a903ce66",
+      "vault": "0x40875F1410FB8e5435fa6568508d1F2C62a8DAa4",
+      "question": "Will ETH be above $5,000 on March 31, 2026?",
+      "resolver": "0xb60B3ffcdB991fC548FA320DcBCB99a8B3206D3e"
+    }
+  ]
 }
