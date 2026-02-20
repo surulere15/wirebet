@@ -1,9 +1,9 @@
-# Wirebet.com Domain Sale Strategy 🦁
+# Wirebet.com Domain Sale Strategy
 
-## 🎯 Objective
+## Objective
 Sell `wirebet.com` to a high-leverage entity (Group Operator, Crypto Casino, or Africa Expansion Giant) for a high-ticket valuation.
 
-## 🦁 Strategic Pillars
+## Strategic Pillars
 
 ### 1. Cluster Head Prioritization (80/20 Rule)
 Instead of 1:1 outreach to 3,000+ minor brands, we focus on:
@@ -19,11 +19,11 @@ Our outreach must move from **Situation** to **Need-Payoff**:
 - **N (Need-Payoff)**: `Wirebet.com` provides an instantly credible, global-first brand identity.
 
 ### 3. Messaging Tone
-- **Authority**: Grade-10 Intelligence/World-Class Engineer tone.
+- **Authority**: Professional, research-backed, data-driven tone throughout all communications.
 - **Micro-Personalization**: Mention specific recent expansion (e.g., "I noticed your recent Nigeria license approval...").
 - **Exclusivity**: High-ticket negotiation, not a fire sale.
 
-## 📈 Pipeline Segments
+## Pipeline Segments
 1. **Cluster Heads**: Group CEOs & Platform Owners.
 2. **Crypto-First**: Stake.com, BC.Game, Roobet.
 3. **Africa Pulse**: SportyBet, Betway Africa, BetKing.

@@ -140,11 +140,11 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
         uint256 C1;
 
         if (side == Side.YES) {
-            if(sharesInUSDC6 > qY) revert();
+            if (sharesInUSDC6 > qY) revert InsufficientShares();
             C1 = LMSRMath.costUSDC6(qY - sharesInUSDC6, qN, b);
             pYesAfter1e18 = LMSRMath.priceYes1e18(qY - sharesInUSDC6, qN, b);
         } else {
-            if(sharesInUSDC6 > qN) revert();
+            if (sharesInUSDC6 > qN) revert InsufficientShares();
             C1 = LMSRMath.costUSDC6(qY, qN - sharesInUSDC6, b);
             pYesAfter1e18 = LMSRMath.priceYes1e18(qY, qN - sharesInUSDC6, b);
         }
@@ -165,6 +165,7 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
     {
         uint256 fee;
         (sharesOutUSDC6, fee, ) = quoteBuy(side, collateralInUSDC6);
+        if (sharesOutUSDC6 == 0) revert ZeroAmount();
         if (sharesOutUSDC6 < minSharesOutUSDC6) revert Slippage();
 
         uint256 assetsBefore = vault.totalAssets();
@@ -175,7 +176,11 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
         uint256 newLiab = newQY >= newQN ? newQY : newQN;
         if (newLiab > _exposureCapUSDC6(assetsBefore)) revert ExposureExceeded();
 
-        collateral.safeTransferFrom(msg.sender, address(vault), collateralInUSDC6 - fee);
+        // Transfer full collateral (including fee) from user to this contract
+        collateral.safeTransferFrom(msg.sender, address(this), collateralInUSDC6);
+        // Approve vault and deposit so shares are minted to this contract
+        collateral.approve(address(vault), collateralInUSDC6);
+        vault.deposit(collateralInUSDC6, address(this));
         feesAccruedUSDC6 += fee;
 
         uint256 id = positions.tokenId(marketId, side == Side.YES ? 0 : 1);
@@ -212,6 +217,13 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
 
     // --- Lifecycle ---
 
+    /**
+     * @notice Locks the market after the close time has passed, preventing further trading.
+     * @dev This function is intentionally callable by anyone (permissionless). Once the
+     *      closeTime has elapsed, any address may call lock() to transition the market from
+     *      OPEN to LOCKED. This design ensures markets cannot remain open past their
+     *      designated close time, even if the resolver or owner is unresponsive.
+     */
     function lock() external override {
         if (state != State.OPEN) revert NotOpen();
         if (block.timestamp < closeTime) revert TooEarly();
@@ -222,7 +234,7 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
     function resolve(Result r, bytes32 /*evidenceHash*/) external override {
         if (msg.sender != resolver) revert Unauthorized();
         if (state != State.LOCKED) revert NotLocked();
-        if (r != Result.YES && r != Result.NO) revert();
+        if (r != Result.YES && r != Result.NO) revert InvalidResult();
         result = r;
         state = State.RESOLVED;
         emit StateChanged(State.LOCKED, State.RESOLVED);
@@ -230,7 +242,7 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
     
     function cancel(bytes32 /*reasonHash*/) external override {
         if (msg.sender != resolver) revert Unauthorized();
-        if (state == State.RESOLVED) revert();
+        if (state == State.RESOLVED) revert CannotCancelResolved();
         State from = state;
         state = State.CANCELLED;
         result = Result.CANCELLED;
@@ -245,19 +257,39 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
         nonReentrant
         returns (uint256 collateralOutUSDC6)
     {
-        if (state != State.RESOLVED) revert NotResolved();
+        if (state != State.RESOLVED && state != State.CANCELLED) revert NotResolved();
         if (sharesInUSDC6 == 0) revert ZeroAmount();
-        
+
         uint256 id = positions.tokenId(marketId, side == Side.YES ? 0 : 1);
         positions.burn(msg.sender, id, sharesInUSDC6);
 
-        bool wins = (result == Result.YES && side == Side.YES) || (result == Result.NO && side == Side.NO);
-        if (!wins) return 0;
-        
-        collateralOutUSDC6 = sharesInUSDC6;
+        if (state == State.CANCELLED) {
+            // Cancelled market: all position holders redeem proportionally.
+            // Each share is backed by collateral in the vault; return 1:1.
+            collateralOutUSDC6 = sharesInUSDC6;
+        } else {
+            // Resolved market: only winning side gets collateral.
+            bool wins = (result == Result.YES && side == Side.YES)
+                || (result == Result.NO && side == Side.NO);
+            if (!wins) return 0;
+            collateralOutUSDC6 = sharesInUSDC6;
+        }
+
         vault.withdraw(collateralOutUSDC6, msg.sender, address(this));
-        
+
         emit Redeemed(msg.sender, side, sharesInUSDC6, collateralOutUSDC6);
+    }
+
+    // --- Admin ---
+
+    function pause() external {
+        if (msg.sender != resolver) revert Unauthorized();
+        _pause();
+    }
+
+    function unpause() external {
+        if (msg.sender != resolver) revert Unauthorized();
+        _unpause();
     }
 
     // --- Fees ---
@@ -297,7 +329,7 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
         uint256 lo = 0;
         uint256 hi = hiUSDC6;
 
-        for (uint256 i = 0; i < 48; i++) {
+        for (uint256 i = 0; i < 24; i++) {
             uint256 mid = (lo + hi) >> 1;
             if (mid == 0) break;
             uint256 C1;

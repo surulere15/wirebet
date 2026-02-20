@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "../interfaces/IWirebetMarket.sol"; // For error types and structs
 
 /**
@@ -13,12 +14,15 @@ import "../interfaces/IWirebetMarket.sol"; // For error types and structs
  * - Ownable, with restricted access to core functions.
  */
 contract FeeRouter is Ownable {
+    using SafeERC20 for IERC20;
+
     address public treasury;
     address public insuranceFund;
     address public rewardsDistributor;
+    address public factory;
 
-    // In v2, this would be a mapping per marketId. For MVP, we use a global split.
-    // WB.FeeSplit public globalFeeSplit;
+    /// @notice Tracks which market addresses are authorized to call routeTradeFee.
+    mapping(address => bool) public authorizedMarkets;
 
     event FeeConfigSet(
         address indexed treasury,
@@ -30,14 +34,20 @@ contract FeeRouter is Ownable {
         address indexed token,
         uint256 amount
     );
+    event MarketAuthorized(address indexed market, bool authorized);
+    event FactorySet(address indexed factory);
 
     error InvalidAddresses();
     error Unauthorized();
+    error FactoryAlreadySet();
 
     modifier onlyMarketFactory() {
-        // In a real implementation, the factory would be set at construction
-        // and this modifier would check msg.sender == factory.
-        // For the MVP, we'll keep it simple and rely on Ownable for config.
+        if (msg.sender != factory) revert Unauthorized();
+        _;
+    }
+
+    modifier onlyAuthorizedMarket() {
+        if (!authorizedMarkets[msg.sender]) revert Unauthorized();
         _;
     }
 
@@ -45,6 +55,28 @@ contract FeeRouter is Ownable {
         if (_initialTreasury == address(0)) revert InvalidAddresses();
         treasury = _initialTreasury;
         emit FeeConfigSet(_initialTreasury, address(0), address(0));
+    }
+
+    /**
+     * @notice Sets the factory address. Can only be called once by the owner.
+     * @param _factory The MarketFactory contract address.
+     */
+    function setFactory(address _factory) external onlyOwner {
+        if (factory != address(0)) revert FactoryAlreadySet();
+        if (_factory == address(0)) revert InvalidAddresses();
+        factory = _factory;
+        emit FactorySet(_factory);
+    }
+
+    /**
+     * @notice Registers or deregisters a market as authorized to route fees.
+     * @dev Only callable by the factory.
+     * @param _market The market address.
+     * @param _authorized Whether the market is authorized.
+     */
+    function setAuthorizedMarket(address _market, bool _authorized) external onlyMarketFactory {
+        authorizedMarkets[_market] = _authorized;
+        emit MarketAuthorized(_market, _authorized);
     }
 
     /**
@@ -74,12 +106,8 @@ contract FeeRouter is Ownable {
         bytes32 marketId,
         address token,
         uint256 amount
-    ) external {
-        // For the MVP, we assume the market contract has already received the
-        // fee and is now transferring it to this router.
-        // In a full implementation, you'd add an onlyMarket modifier.
-        
-        IERC20(token).transfer(treasury, amount);
+    ) external onlyAuthorizedMarket {
+        IERC20(token).safeTransfer(treasury, amount);
 
         emit FeesRouted(marketId, token, amount);
     }

@@ -12,4 +12,4 @@ We have prepared a detailed prospectus outlining the global opportunity, revenue
 
 Sincerely,
 
-[Your Name/Organization]
+The Wirebet Team

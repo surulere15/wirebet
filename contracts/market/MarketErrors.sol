@@ -33,3 +33,9 @@ error TooLarge();
 error ExposureExceeded();
 /// @notice Error when an address that is not an authorized minter attempts to mint/burn.
 error NotMinter(address sender);
+/// @notice Error when a user tries to sell more shares than available in the pool.
+error InsufficientShares();
+/// @notice Error when an invalid result is provided for resolution.
+error InvalidResult();
+/// @notice Error when attempting to cancel a market that is already resolved.
+error CannotCancelResolved();

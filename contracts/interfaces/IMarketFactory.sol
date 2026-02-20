@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-
-import "./WirebetTypes.sol";
+pragma solidity ^0.8.24;
 
 /*//////////////////////////////////////////////////////////////
 // FACTORY
@@ -71,7 +69,7 @@ interface IMarketFactory {
      * @dev Implementations often deploy a minimal proxy clone of a Market implementation.
      * @return market The deployed market address
      */
-    function createMarket(WirebetTypes.MarketParams calldata params)
+    function createMarket(bytes calldata params)
         external
         returns (address market);
 }

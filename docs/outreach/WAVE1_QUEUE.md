@@ -1,4 +1,4 @@
-# Wirebet.com - Wave 1 Outreach Queue (Cluster Heads) 🚀
+# Wirebet.com - Wave 1 Outreach Queue (Cluster Heads)
 
 The following messages are personalized for the top 5 strategic "Cluster Head" targets. Use these for direct LinkedIn outreach.
 
@@ -54,8 +54,34 @@ The following messages are personalized for the top 5 strategic "Cluster Head" t
 
 ## 4. EveryMatrix (White-label Platform)
 **Contact Type**: Founder / CEO
-**Draft**: [Similar to SoftSwiss, focused on EveryMatrix's modular tech stack expansion]
+**Draft**:
+> Dear Team,
+>
+> EveryMatrix's modular iGaming platform and the OddsMatrix sportsbook data feed have set a new standard for operator flexibility. Impressive work building a system that lets partners launch and scale without compromise.
+>
+> As a platform provider powering operators across multiple regulated markets, you understand the value of a strong brand identity. We are facilitating the sale of **Wirebet.com**.
+>
+> This is a premium, globally recognizable domain that could serve as a flagship brand for your most ambitious operator partners, or as a direct-to-consumer vertical for EveryMatrix itself. In a market where trust and recall drive conversion, a domain like Wirebet.com delivers immediate authority.
+>
+> Would you be open to a brief discussion on how this asset fits into your platform strategy?
+>
+> Best,
+> JOE
 
 ## 5. Better Collective (Affiliate Group)
 **Contact Type**: M&A / New Ventures
-**Draft**: [Focused on their 'super affiliate' status and how owning a premium operator-grade domain like Wirebet.com consolidates their conversion funnel]
+**Draft**:
+> Dear Team,
+>
+> Better Collective's position as Europe's largest sports betting affiliate group is well earned. Your portfolio of high-authority media properties consistently demonstrates how content-driven acquisition outperforms paid channels.
+>
+> We are facilitating the sale of **Wirebet.com**.
+>
+> As an affiliate group, you currently drive traffic to third-party operators. A domain like Wirebet.com gives Better Collective a direct operator-grade brand identity, consolidating the entire conversion funnel from content to wagering under one roof. Instead of handing off your hard-won traffic, you own the destination.
+>
+> This asset also positions you to explore direct operator partnerships or white-label sportsbook launches in high-growth markets, particularly across Africa and emerging mobile-first regions.
+>
+> Is this a conversation worth having with your corporate development team?
+>
+> Regards,
+> JOE

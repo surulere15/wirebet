@@ -6,6 +6,7 @@ import "../market/WirebetMarket.sol";
 import "../vault/Vault4626Minimal.sol";
 import "../positions/Positions1155.sol";
 import "../interfaces/IWirebetMarket.sol";
+import "../interfaces/IFeeRouter.sol";
 
 /**
  * @title MarketFactory
@@ -34,8 +35,13 @@ contract MarketFactory is Ownable {
         uint64 closeTime
     );
 
+    uint64 public constant MIN_DURATION = 1 hours;
+    uint64 public constant MAX_DURATION = 365 days;
+
     error MarketExists();
     error InvalidParams();
+    error CloseTimeTooSoon();
+    error CloseTimeTooFar();
 
     constructor(
         address _positions,
@@ -68,7 +74,8 @@ contract MarketFactory is Ownable {
         uint256 _bUSDC6
     ) external onlyOwner returns (address marketAddr, address vaultAddr) {
         if (_resolver == address(0)) revert InvalidParams();
-        if (_closeTime <= block.timestamp) revert InvalidParams();
+        if (_closeTime < block.timestamp + MIN_DURATION) revert CloseTimeTooSoon();
+        if (_closeTime > block.timestamp + MAX_DURATION) revert CloseTimeTooFar();
         if (_bUSDC6 == 0) revert InvalidParams();
 
         // Derive a unique marketId from the question hash and a monotonic nonce
@@ -106,7 +113,10 @@ contract MarketFactory is Ownable {
         // 5. Authorize the market to mint/burn position tokens
         positions.setMinter(marketAddr, true);
 
-        // 6. Record
+        // 6. Authorize the market to route fees via the FeeRouter
+        IFeeRouter(feeRouter).setAuthorizedMarket(marketAddr, true);
+
+        // 7. Record
         markets[marketId] = marketAddr;
         vaults[marketId] = vaultAddr;
         allMarketIds.push(marketId);
@@ -116,31 +126,69 @@ contract MarketFactory is Ownable {
     }
 
     /**
-     * @notice Returns the total number of markets created.
+     * @notice Predicts the addresses a market and its vault would be deployed to.
+     * @dev Useful for front-end UX: show addresses before they exist.
+     *      Uses CREATE2 with the full init code hash (creationCode ++ constructor args).
+     * @param _questionHash Unique identifier for the market question.
+     * @param _nonce The monotonic nonce (typically current marketCount).
+     * @param _resolver Address authorized to resolve/cancel this market.
+     * @param _closeTime Unix timestamp after which trading closes.
+     * @param _risk Risk parameters for the market.
+     * @param _bUSDC6 LMSR liquidity parameter in USDC6 units.
+     * @return marketAddr The predicted WirebetMarket address.
+     * @return vaultAddr The predicted Vault4626Minimal address.
      */
-    function totalMarkets() external view returns (uint256) {
-        return allMarketIds.length;
-    }
-
-    /**
-     * @notice Predicts the address a market would be deployed to.
-     * @dev Useful for front-end UX: show the market address before it exists.
-     */
-    function predictMarketAddress(bytes32 _questionHash, uint256 _nonce)
+    function predictMarketAddress(
+        bytes32 _questionHash,
+        uint256 _nonce,
+        address _resolver,
+        uint64 _closeTime,
+        RiskParams calldata _risk,
+        uint256 _bUSDC6
+    )
         external
         view
-        returns (address)
+        returns (address marketAddr, address vaultAddr)
     {
         bytes32 marketId = keccak256(abi.encodePacked(_questionHash, _nonce));
-        bytes32 hash = keccak256(
+
+        // 1. Predict vault address (deployed first with CREATE2)
+        bytes32 vaultInitHash = keccak256(
             abi.encodePacked(
-                bytes1(0xff),
-                address(this),
-                marketId,
-                keccak256(type(WirebetMarket).creationCode)
+                type(Vault4626Minimal).creationCode,
+                abi.encode(
+                    collateral,
+                    string.concat("Wirebet Vault #", _uint2str(_nonce)),
+                    string.concat("wV", _uint2str(_nonce))
+                )
             )
         );
-        return address(uint160(uint256(hash)));
+        bytes32 vaultHash = keccak256(
+            abi.encodePacked(bytes1(0xff), address(this), marketId, vaultInitHash)
+        );
+        vaultAddr = address(uint160(uint256(vaultHash)));
+
+        // 2. Predict market address using the predicted vault address
+        bytes32 marketInitHash = keccak256(
+            abi.encodePacked(
+                type(WirebetMarket).creationCode,
+                abi.encode(
+                    marketId,
+                    collateral,
+                    vaultAddr,
+                    address(positions),
+                    feeRouter,
+                    _resolver,
+                    _closeTime,
+                    _risk,
+                    _bUSDC6
+                )
+            )
+        );
+        bytes32 marketHash = keccak256(
+            abi.encodePacked(bytes1(0xff), address(this), marketId, marketInitHash)
+        );
+        marketAddr = address(uint160(uint256(marketHash)));
     }
 
     /**

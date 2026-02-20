@@ -146,10 +146,10 @@ contract WirebetMarket_Ref {
     enum State { OPEN, LOCKED, RESOLVED, CANCELLED }
     enum Result { UNSET, YES, NO, CANCELLED }
     struct RiskParams {
-        uint16 feeBps;
         uint16 bufferBps;
-        uint16 maxNetExposureBps;
+        uint16 feeBps;
         uint256 maxTradeSizeUSDC6;
+        uint16 maxNetExposureBps;
     }
     bytes32 public immutable marketId;
     MockUSDC6 public immutable collateral;
@@ -492,10 +492,10 @@ contract MarketInvariant_CompilesNow is StdInvariant, Test {
         usdc.mint(address(vault), 200_000 * 1e6);
 
         WirebetMarket_Ref.RiskParams memory rp = WirebetMarket_Ref.RiskParams({
-            feeBps: 75,
             bufferBps: 300,
-            maxNetExposureBps: 7000,
-            maxTradeSizeUSDC6: 1_000 * 1e6
+            feeBps: 75,
+            maxTradeSizeUSDC6: 1_000 * 1e6,
+            maxNetExposureBps: 7000
         });
         address resolver = makeAddr("resolver");
 

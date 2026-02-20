@@ -1,6 +1,6 @@
 # Wirebet M&A Mission Queue (Feb 2026)
 
-## 🎯 Primary Acquisition Targets & Contacts
+## Primary Acquisition Targets & Contacts
 
 ### 1. FanDuel (Flutter Entertainment)
 **Strategic Fit**: Market leader looking to consolidate dominance.
@@ -27,13 +27,13 @@
 - **Adam Greenblatt** - CEO, BetMGM (Ex-Director CorpDev)
   - *Context*: Ultimate decision maker for BetMGM-specific acquisitions.
 - **Nicholas Batram** - Former Head of M&A (Consultant)
-  - *Context*: Potential backdoor intro or advisory role.
+  - *Context*: Advisory / warm introduction potential.
 
 ### 4. Specialized / Mid-Market
 - **Kalshi**: **Sara Slane** (Head of Corporate Development) - *Prediction Market Synergy*.
 - **SolutionsHub**: **James O'Kelly** (Head of Corporate Development).
 
-## 📝 Outreach Protocols
+## Outreach Protocols
 **Subject Lines (A/B Test)**:
 1. "Strategic Asset Acquisition: Wirebet.com Domain & User Assets"
 2. "Corporate Development / M&A Inquiry: Premium iGaming Asset"

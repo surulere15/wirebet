@@ -3,4 +3,5 @@ pragma solidity ^0.8.24;
 
 interface IFeeRouter {
     function routeTradeFee(bytes32 marketId, address token, uint256 amount) external;
+    function setAuthorizedMarket(address market, bool authorized) external;
 }

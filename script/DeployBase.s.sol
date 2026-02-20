@@ -9,7 +9,7 @@ import "../contracts/fees/FeeRouter.sol";
 /**
  * @title DeployBase
  * @author JOE
- * @notice Foundry script to deploy the Wirebet MVP infrastructure to Base Sepolia.
+ * @notice Foundry script to deploy the Wirebet MVP infrastructure to Base Sepolia or Base Mainnet.
  *
  * Deploys:
  *   1. Positions1155    — shared ERC-1155 for all market position tokens
@@ -21,6 +21,8 @@ import "../contracts/fees/FeeRouter.sol";
 contract DeployBase is Script {
     // Base Sepolia USDC address
     address constant BASE_SEPOLIA_USDC = 0x036CbD53842c5426634e7929541eC2318f3dCF7e;
+    // Base Mainnet USDC address
+    address constant BASE_MAINNET_USDC = 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913;
 
     function run()
         public
@@ -33,7 +35,12 @@ contract DeployBase is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address deployer = vm.addr(deployerPrivateKey);
 
-        address usdcAddress = block.chainid == 84532 ? BASE_SEPOLIA_USDC : address(0);
+        address usdcAddress;
+        if (block.chainid == 8453) {
+            usdcAddress = BASE_MAINNET_USDC;
+        } else if (block.chainid == 84532) {
+            usdcAddress = BASE_SEPOLIA_USDC;
+        }
         require(usdcAddress != address(0), "Unsupported chainId for USDC address");
 
         vm.startBroadcast(deployerPrivateKey);

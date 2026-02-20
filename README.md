@@ -49,6 +49,14 @@ forge test
 forge script script/DeployBase.s.sol --rpc-url base-sepolia --broadcast
 ```
 
+## Status
+
+This project is an **MVP in active development** on **Base Sepolia testnet**. Core contracts (MarketFactory, WirebetMarket, LMSR pricing, ERC-4626 vault, ERC-1155 positions) are deployed and functional on testnet. The protocol is not yet live on mainnet.
+
+## Security
+
+**The smart contracts in this repository have not been audited.** Do not use them in production or with real funds until a formal security audit has been completed. If you discover a vulnerability, please report it responsibly to team@wirebet.com.
+
 ## License
 
 MIT
