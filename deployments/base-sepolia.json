@@ -1,0 +1,14 @@
+{
+  "chainId": 84532,
+  "network": "base-sepolia",
+  "contracts": {
+    "feeRouter": "0x_DEPLOY_AND_FILL",
+    "positions": "0x_DEPLOY_AND_FILL",
+    "factory": "0x_DEPLOY_AND_FILL"
+  },
+  "collateral": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "deployer": "0x_DEPLOY_AND_FILL",
+  "deployedAt": "",
+  "blockNumber": 0,
+  "markets": []
+}

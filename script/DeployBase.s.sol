@@ -56,7 +56,10 @@ contract DeployBase is Script {
             usdcAddress
         );
 
-        // 3. Transfer Positions ownership to the factory so it can grant minter rights
+        // 3. Wire FeeRouter to accept calls from the factory
+        feeRouter.setFactory(address(factory));
+
+        // 4. Transfer Positions ownership to the factory so it can grant minter rights
         positions.transferOwnership(address(factory));
 
         vm.stopBroadcast();
