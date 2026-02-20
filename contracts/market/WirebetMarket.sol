@@ -111,7 +111,8 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
 
         feeUSDC6 = (collateralInUSDC6 * risk.feeBps) / 10_000;
         uint256 net = collateralInUSDC6 - feeUSDC6;
-        uint256 assets = vault.totalAssets();
+        // Use post-deposit assets for exposure cap (incoming collateral will be deposited)
+        uint256 assets = vault.totalAssets() + collateralInUSDC6;
         uint256 hi = _computeHiBoundSharesUSDC6(assets);
         
         sharesOutUSDC6 = _binSearchSharesOutUSDC6(side, net, hi);
@@ -168,13 +169,14 @@ contract WirebetMarket is IWirebetMarket, ReentrancyGuard, Pausable {
         if (sharesOutUSDC6 == 0) revert ZeroAmount();
         if (sharesOutUSDC6 < minSharesOutUSDC6) revert Slippage();
 
-        uint256 assetsBefore = vault.totalAssets();
+        // Use post-deposit assets for exposure check (collateral will be deposited)
+        uint256 assetsAfter = vault.totalAssets() + collateralInUSDC6;
         uint256 newQY = qY;
         uint256 newQN = qN;
         if (side == Side.YES) newQY += sharesOutUSDC6;
         else newQN += sharesOutUSDC6;
         uint256 newLiab = newQY >= newQN ? newQY : newQN;
-        if (newLiab > _exposureCapUSDC6(assetsBefore)) revert ExposureExceeded();
+        if (newLiab > _exposureCapUSDC6(assetsAfter)) revert ExposureExceeded();
 
         // Transfer full collateral (including fee) from user to this contract
         collateral.safeTransferFrom(msg.sender, address(this), collateralInUSDC6);
