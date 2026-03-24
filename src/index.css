@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-primaryText font-sans antialiased text-base selection:bg-accent selection:text-black;
+  }
+}
+
+/* Custom Utilities for smooth hiding/showing elements if needed */
+.glass-panel {
+  @apply bg-surface/80 backdrop-blur-md border border-border;
+}

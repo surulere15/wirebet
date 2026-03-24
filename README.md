@@ -1,62 +1,16 @@
-# Wirebet
+# React + Vite
 
-Community-owned Web3 betting protocol on Base.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Architecture
+Currently, two official plugins are available:
 
-- **MarketFactory** — CREATE2 clone factory for deploying market + vault pairs
-- **WirebetMarket** — Binary prediction market with LMSR pricing
-- **LMSRMath** — Logarithmic Market Scoring Rule math library
-- **Vault4626Minimal** — ERC-4626 vault for market collateral
-- **Positions1155** — ERC-1155 position tokens (YES/NO shares)
-- **FeeRouter** — Fee collection and distribution
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Stack
+## React Compiler
 
-- **Chain**: Base (Coinbase L2)
-- **Language**: Solidity 0.8.24
-- **Framework**: Foundry
-- **Collateral**: USDC
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Project Structure
+## Expanding the ESLint configuration
 
-```
-contracts/
-  factory/        MarketFactory.sol
-  market/         WirebetMarket.sol, LMSRMath.sol
-  vault/          Vault4626Minimal.sol
-  positions/      Positions1155.sol
-  fees/           FeeRouter.sol
-  interfaces/     All interfaces and shared types
-  test/           Unit and invariant tests
-script/           Foundry deployment scripts
-docs/
-  strategy/       Strategic plans and execution docs
-  outreach/       Domain sale outreach materials
-  prospectus/     Investor/acquirer prospectus docs
-```
-
-## Development
-
-```bash
-# Build
-forge build
-
-# Test
-forge test
-
-# Deploy (Base Sepolia)
-forge script script/DeployBase.s.sol --rpc-url base-sepolia --broadcast
-```
-
-## Status
-
-This project is an **MVP in active development** on **Base Sepolia testnet**. Core contracts (MarketFactory, WirebetMarket, LMSR pricing, ERC-4626 vault, ERC-1155 positions) are deployed and functional on testnet. The protocol is not yet live on mainnet.
-
-## Security
-
-**The smart contracts in this repository have not been audited.** Do not use them in production or with real funds until a formal security audit has been completed. If you discover a vulnerability, please report it responsibly to team@wirebet.com.
-
-## License
-
-MIT
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
